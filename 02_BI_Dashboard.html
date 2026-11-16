@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BI Detective — Telco churn dashboard</title>
+<style>
+@font-face{font-family:"Jakarta";src:url(assets/fonts/PlusJakartaSans-500.ttf);font-weight:400 500}
+@font-face{font-family:"Jakarta";src:url(assets/fonts/PlusJakartaSans-700.ttf);font-weight:600 700}
+@font-face{font-family:"Jakarta";src:url(assets/fonts/PlusJakartaSans-800.ttf);font-weight:800}
+@font-face{font-family:"Caveat";src:url(assets/fonts/Caveat-400-700.ttf);font-weight:400 700}
+:root{--red:#EB1D0A;--red-l:#FFE3DF;--navy:#141B2A;--navy-2:#2A3550;--paper:#F5F3EE;--line:#DAD6CC;--ink-2:#4A5367;--ink-3:#727A8C;--shadow:0 1px 2px rgba(11,13,18,.08),0 10px 24px -14px rgba(11,13,18,.3)}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Jakarta",system-ui,sans-serif;background:var(--paper);color:var(--navy);background-image:radial-gradient(rgba(20,27,42,.06) 1.2px,transparent 1.3px);background-size:24px 24px;-webkit-font-smoothing:antialiased}
+button,input{font:inherit}
+header{background:var(--navy);color:#fff;padding:16px 20px}
+.wrap{max-width:1320px;margin:0 auto}
+header .wrap{display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+h1{font-size:24px;margin:0;font-weight:800;letter-spacing:-.02em}
+h1 span{color:#FF5B4A}
+header p{margin:2px 0 0;font-size:13px;color:#B7C0D3}
+.hbtns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{background:var(--red);color:#fff;border:0;border-radius:6px;padding:9px 14px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.ghost{background:transparent;border:1.5px solid rgba(255,255,255,.4)}
+.btn.dark{background:var(--navy)}
+main{padding:16px 20px 60px}
+.layout{display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}.missions{position:static !important;order:-1}}
+.card{background:#fff;box-shadow:var(--shadow);border-radius:4px;padding:16px 18px;position:relative}
+.card h2{font-size:15px;margin:0 0 2px;font-weight:800}
+.card .sub{font-size:12px;color:var(--ink-3);margin:0 0 10px}
+.slicers{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px 22px}
+.slicer b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1.5px solid var(--navy);background:#fff;color:var(--navy);border-radius:99px;padding:5px 11px;font-size:13px;font-weight:700;cursor:pointer}
+.chip.on{background:var(--navy);color:#fff}
+.chip:focus-visible,.row:focus-visible,.btn:focus-visible,td[tabindex]:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:14px 0}
+@media(max-width:700px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{border-top:5px solid var(--navy)}
+.kpi.hot{border-color:var(--red)}
+.kpi b{display:block;font-size:34px;letter-spacing:-.03em;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi.hot b{color:var(--red)}
+.kpi span{font-size:12px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em}
+.kpi small{display:block;font-size:12px;color:var(--ink-2);margin-top:2px;min-height:16px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+.toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+.seg{display:inline-flex;border:1.5px solid var(--navy);border-radius:6px;overflow:hidden}
+.seg button{border:0;background:#fff;padding:6px 12px;font-weight:700;font-size:13px;color:var(--navy);cursor:pointer}
+.seg button.on{background:var(--navy);color:#fff}
+.row{display:grid;grid-template-columns:128px 1fr 62px;gap:8px;align-items:center;font-size:13px;padding:3px 0;cursor:pointer;border-radius:4px}
+.row:hover{background:#F3F1EA}
+.row .lab{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .track{height:20px;position:relative}
+.row .bar{height:100%;background:var(--navy);border-radius:0 4px 4px 0;transition:width .45s cubic-bezier(.2,.8,.2,1),background .2s;min-width:2px}
+.row.sel .bar{background:var(--red)}.row.dim .bar{opacity:.28}
+.row .val{font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+.ref{position:absolute;top:-3px;bottom:-3px;border-left:2px dashed var(--red);pointer-events:none}
+.legend{font-size:11.5px;color:var(--ink-3);margin-top:8px;display:flex;gap:14px;flex-wrap:wrap}
+.legend i{display:inline-block;width:14px;border-top:2px dashed var(--red);vertical-align:middle;margin-right:4px}
+table.pv{width:100%;border-collapse:separate;border-spacing:3px;font-size:13px}
+table.pv th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);text-align:center;padding:4px;font-weight:700}
+table.pv th.rl{text-align:left}
+table.pv td{text-align:center;padding:10px 4px;font-weight:800;border-radius:4px;cursor:pointer;font-variant-numeric:tabular-nums}
+table.pv td small{display:block;font-weight:500;font-size:11px;opacity:.85}
+.tip{position:fixed;pointer-events:none;background:var(--navy);color:#fff;font-size:12.5px;padding:7px 9px;border-radius:6px;z-index:9;opacity:0;transition:opacity .12s;max-width:240px;line-height:1.35}
+.missions{position:sticky;top:12px;background:var(--red);color:#fff;border-radius:4px;padding:18px;box-shadow:var(--shadow)}
+.missions h2{font-family:"Caveat";font-size:34px;margin:0;line-height:1}
+.missions p.in{font-size:13px;margin:6px 0 12px;color:#FFE3DF}
+.m{background:#fff;color:var(--navy);border-radius:4px;padding:12px;margin-top:10px;transform:rotate(-.4deg)}
+.m:nth-child(even){transform:rotate(.5deg)}
+.m h3{margin:0 0 6px;font-size:14px;font-weight:800;display:flex;gap:8px}
+.m h3 i{flex:none;font-style:normal;background:var(--navy);color:#fff;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px}
+.m.ok{outline:3px solid var(--navy)}.m.ok h3 i{background:var(--red)}
+.m .ans{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.m input[type=number],.m input[type=text]{width:90px;padding:6px 8px;border:1.5px solid var(--line);border-radius:6px;font-weight:700}
+.m .fb{font-size:12.5px;margin-top:6px;min-height:16px;font-weight:600;color:var(--ink-2)}
+.m .btn{padding:6px 10px;font-size:13px}
+.name{display:flex;gap:6px;margin-top:8px}.name input{flex:1;padding:7px 9px;border:0;border-radius:6px;font-weight:700}
+.note{font-size:12px;color:var(--ink-3);margin-top:16px;line-height:1.5}
+.hand{font-family:"Caveat";font-size:24px;color:var(--red);font-weight:600}
+.dictcard summary{cursor:pointer;font-size:15px;list-style:none;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.dictcard summary::-webkit-details-marker{display:none}.dictcard summary::before{content:"?";flex:none;width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-weight:800}.dictcard summary span{font-size:12px;color:var(--ink-3)}.dictcard[open] summary span{display:none}
+.dd{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:10px}.dd th{text-align:left;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:6px 8px;border-bottom:2px solid var(--navy)}.dd td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.4}.dd td:first-child{font-weight:800;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div><h1>BI <span>Detective</span> · Telco churn</h1><p>7,043 fictional customers · IBM sample dataset · not Telkom data</p></div>
+  <div class="hbtns"><button class="btn ghost" id="reset">Clear all filters</button><a class="btn ghost" href="data/Telco-Customer-Churn.csv" download>Download CSV for Excel</a></div>
+</div></header>
+<main><div class="wrap layout">
+  <div>
+    <details class="card dictcard"><summary><b>Data dictionary</b> — what do these words mean? <span>tap to open</span></summary>
+      <table class="dd">
+        <tr><th>Word on this page</th><th>Plain meaning</th></tr>
+        <tr><td>Churn</td><td>The customer left (stopped subscribing) last month. <b>Churn rate</b> = customers who left ÷ customers in the group.</td></tr>
+        <tr><td>Contract</td><td>How long the customer committed for. <b>Month-to-month</b>: can leave any time. <b>One year / Two year</b>: committed for that long.</td></tr>
+        <tr><td>Internet service</td><td>The technology. <b>Fiber optic</b>: glass cable, fast, newer. <b>DSL</b>: internet over the old copper telephone line, slower. <b>No internet</b>: phone line only.</td></tr>
+        <tr><td>Tenure</td><td>How many months the person has been a customer.</td></tr>
+        <tr><td>Payment</td><td>How the bill is paid. <b>Electronic check</b>: a manual online bank payment each month. <b>Auto</b>: charged automatically.</td></tr>
+        <tr><td>Tech support</td><td>A paid add-on: priority technical help.</td></tr>
+        <tr><td>Monthly charge</td><td>The monthly bill, in US dollars (this sample is American).</td></tr>
+      </table></details>
+    <div class="card" style="margin-top:14px"><h2>Filters</h2><p class="sub">Tap a value to keep only those customers. Tap again to remove. You can also tap any bar or table cell.</p><div class="slicers" id="slicers"></div></div>
+    <div class="kpis">
+      <div class="card kpi"><span>Customers</span><b id="k-n"></b><small id="k-n2"></small></div>
+      <div class="card kpi"><span>Left (churned)</span><b id="k-c"></b><small id="k-c2"></small></div>
+      <div class="card kpi hot"><span>Churn rate</span><b id="k-r"></b><small id="k-r2"></small></div>
+      <div class="card kpi"><span>Avg monthly charge</span><b id="k-m"></b><small>US$ per customer</small></div>
+    </div>
+    <div class="toolbar"><span class="hand" id="filterline">No filters — all customers</span>
+      <div class="seg" id="measure" role="group" aria-label="Measure"><button class="on" data-m="rate">Churn rate %</button><button data-m="count">Customers lost</button></div></div>
+    <div class="grid" id="charts"></div>
+    <div class="card" style="margin-top:14px"><h2>Cross table · Contract × Internet service</h2><p class="sub">Darker = higher churn rate. Small number = customers in the cell. Tap a cell to filter both fields.</p><div id="pivot"></div></div>
+    <p class="note">How to read: each chart applies every filter <b>except its own field</b>, so you can compare the bars. The dashed red line is the churn rate of all 7,043 customers (26.5%). A higher rate in a group is an <b>observation</b>; it does not prove the cause.<br>Dataset: IBM “Telco Customer Churn” sample (github.com/IBM/telco-customer-churn-on-icp4d). Customers are fictional.</p>
+  </div>
+  <aside class="missions">
+    <h2>Your missions</h2><p class="in">Solve them with the dashboard. Write down the filter, the count and the comparison.</p>
+    <div class="name"><input id="who" maxlength="20" placeholder="Nickname (for the class board)" aria-label="Nickname"></div>
+    <div class="m" data-k="1"><h3><i>1</i>What is the overall churn rate (no filters)?</h3><div class="ans"><input type="number" step="0.1" aria-label="Answer in percent"> % <button class="btn dark">Check</button></div><div class="fb"></div></div>
+    <div class="m" data-k="2"><h3><i>2</i>Which contract type loses the most customers?</h3><div class="ans"><button class="btn dark" data-v="0">Month-to-month</button><button class="btn dark" data-v="1">One year</button><button class="btn dark" data-v="2">Two year</button></div><div class="fb"></div></div>
+    <div class="m" data-k="3"><h3><i>3</i>Fiber optic + month-to-month: what is the churn rate?</h3><div class="ans"><input type="number" step="0.1" aria-label="Answer in percent"> % <button class="btn dark">Check</button></div><div class="fb"></div></div>
+    <div class="m" data-k="4"><h3><i>4</i>Find a segment with 300+ customers and churn above 60%.</h3><div class="ans"><button class="btn dark">Check my current filters</button></div><div class="fb"></div></div>
+    <div class="m" data-k="0" style="background:var(--navy);color:#fff"><h3 style="margin:0">Bonus for discussion</h3><div class="fb" style="color:#D5DBE8;font-weight:500">Why might that segment leave more? Name two explanations you cannot test with this data.</div></div>
+  </aside>
+</div></main>
+<div class="tip" id="tip"></div>
+<script src="data/telco.js"></script>
+<script>
+(function(){
+'use strict';
+const D=window.TELCO, R=D.rows, C=n=>D.cols.indexOf(n);
+const iT=C('tenure'), iM=C('monthly'), iY=C('churn');
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const fmt=n=>Math.round(n).toLocaleString('en-US'), pct=v=>(v*100).toFixed(1)+'%';
+const nice=s=>s.replace(' (automatic)','').replace('No internet service','No internet');
+const DIMS=[
+ {k:'Contract',label:'Contract',vals:D.dic.Contract,get:r=>r[C('Contract')]},
+ {k:'InternetService',label:'Internet service',vals:D.dic.InternetService.map(v=>v==='No'?'No internet':v),get:r=>r[C('InternetService')]},
+ {k:'Tenure',label:'Tenure (months as customer)',vals:['0–12','13–24','25–48','49+'],get:r=>r[iT]<=12?0:r[iT]<=24?1:r[iT]<=48?2:3},
+ {k:'PaymentMethod',label:'Payment method',vals:D.dic.PaymentMethod.map(nice),get:r=>r[C('PaymentMethod')]},
+ {k:'TechSupport',label:'Tech support add-on',vals:D.dic.TechSupport.map(nice),get:r=>r[C('TechSupport')]},
+ {k:'Monthly',label:'Monthly charge (US$)',vals:['< 35','35–70','70–90','90+'],get:r=>r[iM]<35?0:r[iM]<70?1:r[iM]<90?2:3}
+];
+// pre-compute dimension indices once
+const IDX=R.map(r=>DIMS.map(d=>d.get(r)));
+const sel=DIMS.map(()=>new Set());
+let measure='rate';
+const overall=R.reduce((a,r)=>a+r[iY],0)/R.length;
+
+function pass(i,skip){for(let d=0;d<DIMS.length;d++){if(d===skip||!sel[d].size)continue;if(!sel[d].has(IDX[i][d]))return false;}return true;}
+function agg(skip,dim){const out=DIMS[dim].vals.map(()=>[0,0]);for(let i=0;i<R.length;i++){if(!pass(i,skip))continue;const o=out[IDX[i][dim]];o[0]++;o[1]+=R[i][iY];}return out;}
+function totals(){let n=0,c=0,m=0;for(let i=0;i<R.length;i++){if(!pass(i,-1))continue;n++;c+=R[i][iY];m+=R[i][iM];}return{n,c,m:n?m/n:0,rate:n?c/n:0};}
+
+// slicers
+const sl=$('#slicers');
+DIMS.forEach((d,di)=>{const w=document.createElement('div');w.className='slicer';w.innerHTML='<b>'+d.label+'</b>';const ch=document.createElement('div');ch.className='chips';
+ d.vals.forEach((v,vi)=>{const b=document.createElement('button');b.className='chip';b.textContent=v;b.dataset.d=di;b.dataset.v=vi;b.setAttribute('aria-pressed','false');b.onclick=()=>toggle(di,vi);ch.appendChild(b);});w.appendChild(ch);sl.appendChild(w);});
+function toggle(di,vi){sel[di].has(vi)?sel[di].delete(vi):sel[di].add(vi);render();}
+$('#reset').onclick=()=>{sel.forEach(s=>s.clear());render();};
+$$('#measure button').forEach(b=>b.onclick=()=>{measure=b.dataset.m;$$('#measure button').forEach(x=>x.classList.toggle('on',x===b));render();});
+
+// charts
+const charts=$('#charts'), tip=$('#tip');
+const cards=DIMS.map((d,di)=>{const c=document.createElement('div');c.className='card';c.innerHTML='<h2></h2><p class="sub"></p><div class="rows"></div><div class="legend"></div>';charts.appendChild(c);return c;});
+function showTip(e,html){tip.innerHTML=html;tip.style.opacity=1;const x=Math.min(innerWidth-250,e.clientX+14);tip.style.left=x+'px';tip.style.top=(e.clientY+14)+'px';}
+function hideTip(){tip.style.opacity=0;}
+
+function render(){
+ const t=totals();
+ $('#k-n').textContent=fmt(t.n);$('#k-n2').textContent=pct(t.n/R.length)+' of all customers';
+ $('#k-c').textContent=fmt(t.c);$('#k-c2').textContent=t.n?fmt(t.n-t.c)+' stayed':'';
+ $('#k-r').textContent=t.n?pct(t.rate):'—';
+ const diff=(t.rate-overall)*100;$('#k-r2').textContent=!t.n?'':Math.abs(diff)<.05?'same as all customers':(diff>0?'+':'−')+Math.abs(diff).toFixed(1)+' pp vs all customers';
+ $('#k-m').textContent=t.n?t.m.toFixed(1):'—';
+ const parts=DIMS.map((d,i)=>sel[i].size?d.label.split(' (')[0]+': '+[...sel[i]].sort().map(v=>d.vals[v]).join(' or '):null).filter(Boolean);
+ $('#filterline').textContent=parts.length?parts.join('  ·  '):'No filters — all customers';
+ $$('.chip').forEach(b=>{const on=sel[+b.dataset.d].has(+b.dataset.v);b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
+ DIMS.forEach((d,di)=>{
+  const a=agg(di,di), card=cards[di];
+  card.querySelector('h2').textContent=(measure==='rate'?'Churn rate':'Customers lost')+' by '+d.label.toLowerCase();
+  card.querySelector('.sub').textContent=measure==='rate'?'Share of each group that left':'Number of customers in each group that left';
+  const max=measure==='rate'?Math.max(.6,...a.map(x=>x[0]?x[1]/x[0]:0)):Math.max(1,...a.map(x=>x[1]));
+  const rows=card.querySelector('.rows');rows.innerHTML='';
+  a.forEach((x,vi)=>{
+   const rate=x[0]?x[1]/x[0]:0, v=measure==='rate'?rate:x[1];
+   const r=document.createElement('div');r.className='row'+(sel[di].size?(sel[di].has(vi)?' sel':' dim'):'');r.tabIndex=0;r.setAttribute('role','button');
+   r.setAttribute('aria-label',`${d.vals[vi]}: ${fmt(x[1])} of ${fmt(x[0])} left, ${pct(rate)}`);
+   r.innerHTML=`<span class="lab">${d.vals[vi]}</span><span class="track"><span class="bar" style="width:${v/max*100}%;display:block"></span>${measure==='rate'?`<span class="ref" style="left:${overall/max*100}%"></span>`:''}</span><span class="val">${x[0]?(measure==='rate'?pct(rate):fmt(x[1])):'—'}</span>`;
+   r.onclick=()=>toggle(di,vi);r.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle(di,vi);}};
+   r.onmousemove=e=>showTip(e,`<b>${d.vals[vi]}</b><br>${fmt(x[1])} of ${fmt(x[0])} customers left<br>Churn rate ${pct(rate)}`);r.onmouseleave=hideTip;
+   rows.appendChild(r);
+  });
+  card.querySelector('.legend').innerHTML=measure==='rate'?'<span><i></i>all customers 26.5%</span><span>tap a bar to filter</span>':'<span>tap a bar to filter</span>';
+ });
+ renderPivot();
+}
+function renderPivot(){
+ const cD=0,iD=1,g={};
+ for(let i=0;i<R.length;i++){let ok=true;for(let d=2;d<DIMS.length;d++){if(sel[d].size&&!sel[d].has(IDX[i][d])){ok=false;break;}}if(!ok)continue;const k=IDX[i][cD]+'|'+IDX[i][iD];(g[k]=g[k]||[0,0])[0]++;g[k][1]+=R[i][iY];}
+ let h='<table class="pv"><tr><th class="rl">Contract ↓ · Internet →</th>'+DIMS[iD].vals.map(v=>'<th>'+v+'</th>').join('')+'</tr>';
+ DIMS[cD].vals.forEach((cv,ci)=>{h+='<tr><th class="rl" style="color:var(--navy);text-transform:none;font-size:13px">'+cv+'</th>';
+  DIMS[iD].vals.forEach((iv,ii)=>{const x=g[ci+'|'+ii]||[0,0],rate=x[0]?x[1]/x[0]:0;const a=Math.min(1,rate/.6);const on=sel[cD].has(ci)&&sel[iD].has(ii);
+   // sequential single-hue ramp (white → red), ink flips for contrast
+   h+=`<td tabindex="0" data-c="${ci}" data-i="${ii}" style="background:rgba(235,29,10,${(.06+a*.94).toFixed(2)});color:${a>.45?'#fff':'#141B2A'};${on?'outline:3px solid #141B2A':''}" aria-label="${cv}, ${iv}: ${pct(rate)}, ${x[0]} customers">${x[0]?pct(rate):'—'}<small>${fmt(x[0])}</small></td>`;});h+='</tr>';});
+ $('#pivot').innerHTML=h+'</table>';
+ $$('#pivot td').forEach(td=>{const f=()=>{const c=+td.dataset.c,i=+td.dataset.i;const same=sel[0].size===1&&sel[0].has(c)&&sel[1].size===1&&sel[1].has(i);sel[0].clear();sel[1].clear();if(!same){sel[0].add(c);sel[1].add(i);}render();};td.onclick=f;td.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}};});
+}
+
+// missions
+const who=$('#who');try{who.value=localStorage.getItem('className')||'';}catch(e){}
+who.oninput=()=>{try{localStorage.setItem('className',who.value.trim());}catch(e){}};
+function send(k,answer,correct){if(!location.protocol.startsWith('http'))return;const name=who.value.trim()||'anonymous';
+ fetch('api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'mission',name,mission:k,answer:String(answer),correct})}).catch(()=>{});}
+function done(m,ok,msg){m.classList.toggle('ok',ok);m.querySelector('.fb').textContent=msg;}
+$$('.m').forEach(m=>{const k=+m.dataset.k;if(!k)return;
+ m.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  if(k===1||k===3){const v=parseFloat(m.querySelector('input').value);if(isNaN(v))return done(m,false,'Type a number first.');
+   const target=k===1?26.5:54.6,ok=Math.abs(v-target)<=.6;send(k,v,ok);
+   done(m,ok,ok?(k===1?'Correct — 1,869 of 7,043. This is your baseline for every comparison.':'Correct — 1,162 of 2,128. More than double the baseline.'):(k===1?'Not yet. Clear all filters and read the red card.':'Not yet. Select both filters, then read the churn-rate card.'));}
+  if(k===2){const ok=b.dataset.v==='0';send(k,b.textContent,ok);done(m,ok,ok?'Correct — 1,655 customers lost, and the highest rate (42.7%). Switch the measure to compare count and rate.':'Look again — try the “Customers lost” measure.');}
+  if(k===4){const t=totals(),any=sel.some(s=>s.size),ok=any&&t.n>=300&&t.rate>.6;send(k,$('#filterline').textContent.slice(0,38),ok);
+   done(m,ok,ok?`Found one: ${fmt(t.n)} customers, ${pct(t.rate)} churn. Be ready to explain your filters.`:!any?'Add some filters first.':t.n<300?`Only ${fmt(t.n)} customers — too small to act on. Widen it.`:`${fmt(t.n)} customers at ${pct(t.rate)} — not above 60% yet. Combine more filters.`);}
+ });
+ const inp=m.querySelector('input');if(inp)inp.onkeydown=e=>{if(e.key==='Enter')m.querySelector('button').click();};
+});
+render();
+})();
+</script>
+</body>
+</html>

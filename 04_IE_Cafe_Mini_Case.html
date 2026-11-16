@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IE Cafe — mini case</title>
+<style>
+@font-face{font-family:"Jakarta";src:url(assets/fonts/PlusJakartaSans-500.ttf);font-weight:400 500}
+@font-face{font-family:"Jakarta";src:url(assets/fonts/PlusJakartaSans-700.ttf);font-weight:600 700}
+@font-face{font-family:"Jakarta";src:url(assets/fonts/PlusJakartaSans-800.ttf);font-weight:800}
+@font-face{font-family:"Caveat";src:url(assets/fonts/Caveat-400-700.ttf);font-weight:400 700}
+:root{--red:#EB1D0A;--red-l:#FFE3DF;--navy:#141B2A;--grey:#9AA3B5;--paper:#F5F3EE;--line:#DAD6CC;--ink-2:#4A5367;--ink-3:#727A8C;--shadow:0 1px 2px rgba(11,13,18,.08),0 10px 24px -14px rgba(11,13,18,.3)}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Jakarta",system-ui,sans-serif;background:var(--paper);color:var(--navy);background-image:radial-gradient(rgba(20,27,42,.06) 1.2px,transparent 1.3px);background-size:24px 24px;-webkit-font-smoothing:antialiased;line-height:1.45}
+button,input{font:inherit}
+header{background:var(--navy);color:#fff;padding:22px 16px 26px}
+.wrap{max-width:1080px;margin:0 auto}
+h1{font-size:30px;margin:0;font-weight:800;letter-spacing:-.03em;line-height:1.1}h1 span{color:#FF5B4A}
+header p{margin:8px 0 0;font-size:15px;color:#C5CDDD;max-width:720px}
+.kick{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:6px}
+header .kick{color:#FF6B5C}
+main{padding:16px 16px 60px}
+section{margin-top:26px}
+h2{font-size:23px;margin:0 0 4px;font-weight:800;letter-spacing:-.02em}
+.sub{font-size:14px;color:var(--ink-2);margin:0 0 12px;max-width:760px}
+.card{background:#fff;box-shadow:var(--shadow);border-radius:4px;padding:16px 18px;position:relative}
+.hand{font-family:"Caveat";font-size:26px;color:var(--red);font-weight:600;line-height:1.1}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tabs button{border:2px solid var(--navy);background:#fff;color:var(--navy);border-radius:99px;padding:8px 14px;font-weight:700;font-size:14px;cursor:pointer}
+.tabs button.on{background:var(--navy);color:#fff}
+.tabs button.star{border-color:var(--red)}.tabs button.star.on{background:var(--red)}
+.method{margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.method div{border-top:4px solid var(--red);padding-top:8px}
+.method b{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.method p{margin:4px 0 0;font-size:14.5px}
+.two{display:grid;grid-template-columns:1.25fr 1fr;gap:16px;align-items:start}
+@media(max-width:860px){.two{grid-template-columns:1fr}.method{grid-template-columns:1fr}}
+svg text{font-family:"Jakarta",sans-serif}
+.pt{cursor:pointer;transition:r .2s}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2);margin-top:8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:5px}
+.detail h3{margin:0;font-size:21px;font-weight:800}
+.tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:99px;color:#fff;margin-top:6px}
+.nums{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.nums div{border-top:3px solid var(--navy);padding-top:6px}
+.nums b{display:block;font-size:22px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.nums span{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.rec{background:var(--red-l);border-left:5px solid var(--red);padding:10px 12px;margin-top:12px;font-size:14.5px}
+label{display:flex;justify-content:space-between;font-size:13.5px;font-weight:700;margin-top:12px}
+input[type=range]{width:100%;accent-color:var(--red)}
+.delta{font-size:30px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin-top:8px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);text-align:right;padding:6px 8px;border-bottom:2px solid var(--navy)}
+th:first-child,td:first-child{text-align:left}
+td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+tr.sel td{background:var(--red-l)}
+tbody tr{cursor:pointer}
+.scroll{overflow-x:auto}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:860px){.steps{grid-template-columns:1fr}}
+.steps div{background:#fff;box-shadow:var(--shadow);padding:12px 14px;border-radius:4px}
+.steps b{font-size:13px;color:var(--red);letter-spacing:.06em}
+.steps p{margin:4px 0 0;font-size:14px}
+.note{font-size:12.5px;color:var(--ink-3);margin-top:20px}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="kick">Mini case · you are the consultant</div>
+  <h1>IE Cafe: <span>one dataset, many answers</span></h1>
+  <p>A cafe in Surabaya, open since 2019, one outlet. Featured products are unclear, margin is below target, sales fluctuate, stock sometimes runs out — and net income kept falling through 2023. What would you recommend?</p>
+</div></header>
+<main><div class="wrap">
+
+<section>
+  <div class="kick">Step 1 · pick the question</div>
+  <h2>The same data can answer very different questions</h2>
+  <p class="sub">Tap a question. Each needs different columns and gives the owner a different decision. None of them is “the” right answer.</p>
+  <div class="card">
+    <div class="tabs" id="tabs"></div>
+    <div class="method" id="method"></div>
+  </div>
+</section>
+
+<section>
+  <div class="kick">Step 2 · one worked answer</div>
+  <h2>Menu analysis: which products deserve the spotlight?</h2>
+  <p class="sub">Join <b>transactions</b> (how many of each item were sold) with <b>cost per product</b> (what each item earns). Every item lands in one of four boxes. Tap a dot or a table row.</p>
+  <div class="two">
+    <div class="card">
+      <svg id="chart" viewBox="0 0 640 430" width="100%" role="img" aria-label="Menu items by popularity and margin"></svg>
+      <div class="legend"><span><i style="background:var(--red)"></i>Star</span><span><i style="background:var(--navy)"></i>Workhorse</span><span><i style="background:#fff;border:3px solid var(--navy)"></i>Puzzle</span><span><i style="background:var(--grey)"></i>Dog</span><span>Dot size = monthly profit from the item. Dashed lines = menu averages.</span></div>
+    </div>
+    <div>
+      <div class="card detail" id="detail"></div>
+      <div class="card" style="margin-top:14px">
+        <div class="hand">What if…?</div>
+        <label>Change the price <span id="pv"></span></label><input type="range" id="pr" min="-10" max="20" step="1" value="0" aria-label="Price change in percent">
+        <label>Units sold change <span id="qv"></span></label><input type="range" id="qr" min="-40" max="60" step="5" value="0" aria-label="Units sold change in percent">
+        <div class="delta" id="delta"></div>
+        <p class="sub" style="margin:2px 0 0;font-size:13px" id="deltaexp"></p>
+      </div>
+    </div>
+  </div>
+  <div class="card scroll" style="margin-top:14px">
+    <table><thead><tr><th>Product</th><th>Price</th><th>Cost</th><th>Margin / item</th><th>Margin %</th><th>Sold / month</th><th>Profit / month</th><th>Box</th></tr></thead><tbody id="tb"></tbody></table>
+  </div>
+</section>
+
+<section>
+  <div class="kick">Step 3 · explain it with CRISP-DM</div>
+  <h2>How you would present this answer</h2>
+  <p class="sub">You do not need to analyse data or build a model for the case — you need to explain your steps and what you expect to happen.</p>
+  <div class="steps">
+    <div><b>1 · BUSINESS UNDERSTANDING</b><p>Owner cannot name the featured products; margin is below target. Goal: raise monthly profit without more customers.</p></div>
+    <div><b>2 · DATA UNDERSTANDING</b><p>Transactions list items in one text cell; the cost table has one row per product. Write a data dictionary first.</p></div>
+    <div><b>3 · DATA PREPARATION</b><p>Split the item text into rows, fix typos and “x 2” quantities, remove refunds, then join to cost by product name.</p></div>
+    <div><b>4 · MODELLING</b><p>No machine learning: count units, compute margin, compare with the menu average. Four boxes.</p></div>
+    <div><b>5 · EVALUATION</b><p>Does the map match what staff see every day? Check with the owner before changing the menu.</p></div>
+    <div><b>6 · DEPLOYMENT</b><p>Feature the stars, bundle a puzzle with a star, reprice one workhorse. Measure next month and repeat.</p></div>
+  </div>
+  <p class="note">Prices and costs follow the teaching case. Units sold per month are invented for this exercise, so the positions on the map are illustrative. Method: menu engineering (Kasavana &amp; Smith, 1982). Other valid answers — forecasting, stock analysis, review sentiment, basket analysis — use the same six steps.</p>
+</section>
+
+</div></main>
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s), NS='http://www.w3.org/2000/svg';
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;};
+const fmt=n=>Math.round(n).toLocaleString('en-US'), rp=n=>(n<0?'−Rp':'Rp')+fmt(Math.abs(n));
+
+/* ---- step 1: questions ---- */
+const Q=[
+ {t:'Which products should we feature?',star:1,m:'Menu analysis',d:'Transactions + cost per product',o:'A menu map: what to promote, bundle, reprice or drop. Worked out below.'},
+ {t:'Why do sales go up and down?',m:'Forecasting',d:'Transactions by date and hour, plus holidays and weather',o:'Expected sales per day, so staffing and purchasing follow demand.'},
+ {t:'Why do we run out of stock?',m:'Stock analysis',d:'Purchasing data + items sold per day',o:'A reorder point for each ingredient: when to buy and how much.'},
+ {t:'What annoys our customers?',m:'Sentiment analysis',d:'Review text and scores, Google Business data',o:'Complaint themes ranked by how often they appear: price, portion, waiting time.'},
+ {t:'What sells well together?',m:'Basket analysis',d:'Items inside each receipt',o:'Bundle ideas: pair a slow item with one people already buy.'},
+ {t:'Enough staff at peak hours?',m:'Workload analysis',d:'Timesheets + transactions per hour',o:'A shift plan that matches the busy hours.'}
+];
+const tabs=$('#tabs');
+function showQ(i){[...tabs.children].forEach((b,k)=>b.classList.toggle('on',k===i));const q=Q[i];
+ $('#method').innerHTML=`<div><b>Method</b><p><strong>${q.m}</strong></p></div><div><b>Data it needs</b><p>${q.d}</p></div><div><b>What the owner gets</b><p>${q.o}</p></div>`;}
+Q.forEach((q,i)=>{const b=document.createElement('button');b.textContent=q.t;if(q.star)b.className='star';b.onclick=()=>showQ(i);tabs.appendChild(b);});
+showQ(0);
+
+/* ---- step 2: menu map. price & cost from the case; qty invented ---- */
+const M=[
+ ['IE nasi goreng',21000,8500,310],['French fries',13000,4575,290],['Crispy mushroom',4000,1760,260],
+ ['Rice bowl chicken teriyaki',21000,7801,240],['Rice bowl chicken katsu',17000,8042,205],['Nasi ayam bumbu merah',15000,9066,180],
+ ['Cheese fries',12000,7621,150],['Fettucini carbonara',19000,8964,90],['Fish n chip',21000,8327,85],
+ ['Churros',9000,5817,75],['Spaghetti aglio olio',24000,8854,70],['Rice bowl beef teriyaki',34000,11730,60]
+].map(r=>({n:r[0],p:r[1],c:r[2],q:r[3],m:r[1]-r[2]}));
+const avgQ=M.reduce((a,x)=>a+x.q,0)/M.length, avgM=M.reduce((a,x)=>a+x.m*x.q,0)/M.reduce((a,x)=>a+x.q,0);
+const BOX={star:{l:'Star',c:'#EB1D0A',r:'Feature it on the menu and at the counter. Protect quality and never let it run out of stock.'},
+ work:{l:'Workhorse',c:'#141B2A',r:'Popular but thin margin. Test a small price rise, a smaller portion, or pair it with a high-margin drink.'},
+ puzzle:{l:'Puzzle',c:'#fff',r:'Earns well but few people order it. Move it up the menu, let staff recommend it, or bundle it with a star.'},
+ dog:{l:'Dog',c:'#9AA3B5',r:'Few buyers and little margin. Consider removing it, or keep it only if it shares ingredients with a star.'}};
+M.forEach(x=>{x.box=x.q>=avgQ?(x.m>=avgM?'star':'work'):(x.m>=avgM?'puzzle':'dog');});
+const svg=$('#chart'),W=640,H=430,m={l:64,r:20,t:26,b:46};
+const maxQ=340,maxM=24000;
+const X=q=>m.l+q/maxQ*(W-m.l-m.r), Y=v=>m.t+(1-v/maxM)*(H-m.t-m.b);
+el('rect',{x:m.l,y:m.t,width:W-m.l-m.r,height:H-m.t-m.b,fill:'#FBFAF7',stroke:'#DAD6CC'},svg);
+[0,6000,12000,18000,24000].forEach(v=>{el('line',{x1:m.l,x2:W-m.r,y1:Y(v),y2:Y(v),stroke:'#ECE9E1'},svg);el('text',{x:m.l-8,y:Y(v)+4,'text-anchor':'end','font-size':11,fill:'#727A8C'},svg).textContent=v/1000+'k';});
+[0,100,200,300].forEach(v=>el('text',{x:X(v),y:H-m.b+16,'text-anchor':'middle','font-size':11,fill:'#727A8C'},svg).textContent=v);
+el('line',{x1:X(avgQ),x2:X(avgQ),y1:m.t,y2:H-m.b,stroke:'#141B2A','stroke-dasharray':'5 5','stroke-width':1.5},svg);
+el('line',{x1:m.l,x2:W-m.r,y1:Y(avgM),y2:Y(avgM),stroke:'#141B2A','stroke-dasharray':'5 5','stroke-width':1.5},svg);
+[['PUZZLE',m.l+8,m.t+16,'start'],['STAR',W-m.r-8,m.t+16,'end'],['DOG',m.l+8,H-m.b-8,'start'],['WORKHORSE',W-m.r-8,H-m.b-8,'end']].forEach(a=>{el('text',{x:a[1],y:a[2],'text-anchor':a[3],'font-size':12,'font-weight':800,fill:a[0]==='STAR'?'#EB1D0A':'#727A8C','letter-spacing':1.5},svg).textContent=a[0];});
+el('text',{x:(m.l+W-m.r)/2,y:H-8,'text-anchor':'middle','font-size':12,fill:'#4A5367','font-weight':700},svg).textContent='popularity — units sold per month →';
+const yl=el('text',{x:16,y:(m.t+H-m.b)/2,'text-anchor':'middle','font-size':12,fill:'#4A5367','font-weight':700,transform:`rotate(-90 16 ${(m.t+H-m.b)/2})`},svg);yl.textContent='margin per item (Rp) →';
+const maxP=Math.max(...M.map(x=>x.m*x.q));
+M.forEach((x,i)=>{const r=7+Math.sqrt(x.m*x.q/maxP)*17;x.r=r;
+ x.dot=el('circle',{class:'pt',cx:X(x.q),cy:Y(x.m),r,fill:BOX[x.box].c,stroke:x.box==='puzzle'?'#141B2A':'#fff','stroke-width':x.box==='puzzle'?3:2,tabindex:0,role:'button','aria-label':x.n},svg);
+ x.dot.addEventListener('click',()=>pick(i));x.dot.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(i);}});});
+const ring=el('circle',{fill:'none',stroke:'#EB1D0A','stroke-width':3,'stroke-dasharray':'4 4','pointer-events':'none'},svg);
+const lab=el('text',{'font-size':13,'font-weight':800,fill:'#141B2A','text-anchor':'middle','pointer-events':'none'},svg);
+const tb=$('#tb');
+[...M].sort((a,b)=>b.m*b.q-a.m*a.q).forEach(x=>{const tr=document.createElement('tr');
+ tr.innerHTML=`<td><b>${x.n}</b></td><td>${fmt(x.p)}</td><td>${fmt(x.c)}</td><td>${fmt(x.m)}</td><td>${Math.round(x.m/x.p*100)}%</td><td>${x.q}</td><td>${fmt(x.m*x.q)}</td><td>${BOX[x.box].l}</td>`;
+ tr.onclick=()=>pick(M.indexOf(x));tb.appendChild(tr);x.tr=tr;});
+let cur=0;
+function whatif(){const x=M[cur],dp=+$('#pr').value,dq=+$('#qr').value;
+ $('#pv').textContent=(dp>0?'+':'')+dp+'%';$('#qv').textContent=(dq>0?'+':'')+dq+'%';
+ const np=x.p*(1+dp/100),nq=x.q*(1+dq/100),d=(np-x.c)*nq-x.m*x.q;
+ const o=$('#delta');o.textContent=(d>=0?'+':'')+rp(d).replace('−Rp','−Rp')+' / month';o.style.color=d<0?'#141B2A':'#EB1D0A';
+ $('#deltaexp').textContent=`${x.n}: ${fmt(nq)} sold at ${rp(np)} → profit ${rp((np-x.c)*nq)} (now ${rp(x.m*x.q)}). You choose the price; customers choose the units.`;}
+function pick(i){cur=i;const x=M[i],b=BOX[x.box];
+ ring.setAttribute('cx',X(x.q));ring.setAttribute('cy',Y(x.m));ring.setAttribute('r',x.r+6);
+ lab.setAttribute('x',Math.min(W-90,Math.max(m.l+80,X(x.q))));lab.setAttribute('y',Y(x.m)-x.r-12<m.t+26?Y(x.m)+x.r+22:Y(x.m)-x.r-12);lab.textContent=x.n;
+ M.forEach(y=>y.tr.classList.toggle('sel',y===x));
+ $('#detail').innerHTML=`<h3>${x.n}</h3><span class="tag" style="background:${x.box==='puzzle'?'#141B2A':b.c}">${b.l}</span>
+ <div class="nums"><div><b>${rp(x.m)}</b><span>margin per item</span></div><div><b>${x.q}</b><span>sold per month</span></div><div><b>${Math.round(x.m/x.p*100)}%</b><span>margin of price</span></div><div><b>${rp(x.m*x.q)}</b><span>profit per month</span></div></div>
+ <div class="rec"><b>Recommendation.</b> ${b.r}</div>`;
+ $('#pr').value=0;$('#qr').value=0;whatif();}
+$('#pr').oninput=whatif;$('#qr').oninput=whatif;
+pick(M.findIndex(x=>x.n==='Rice bowl beef teriyaki'));
+})();
+</script>
+</body>
+</html>

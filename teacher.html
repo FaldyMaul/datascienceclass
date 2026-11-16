@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:,">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Class results — lecturer view</title>
+<style>
+@font-face{font-family:"Jakarta";src:url(assets/fonts/PlusJakartaSans-500.ttf);font-weight:400 500}
+@font-face{font-family:"Jakarta";src:url(assets/fonts/PlusJakartaSans-800.ttf);font-weight:700 800}
+:root{--red:#EB1D0A;--red-l:#FFE3DF;--navy:#141B2A;--paper:#F5F3EE;--line:#DAD6CC;--ink-2:#4A5367;--ink-3:#727A8C;--shadow:0 1px 2px rgba(11,13,18,.08),0 10px 24px -14px rgba(11,13,18,.3)}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Jakarta",system-ui,sans-serif;background:var(--paper);color:var(--navy);-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer}
+header{background:var(--navy);color:#fff;padding:16px 18px}
+.wrap{max-width:1180px;margin:0 auto}
+header .wrap{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+h1{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em}
+#status{font-size:13px;color:#C5CDDD;margin-top:2px}
+.btn{background:var(--red);color:#fff;border:0;border-radius:6px;padding:8px 13px;font-weight:800;font-size:13.5px}
+.btn.ghost{background:transparent;border:1.5px solid rgba(255,255,255,.45)}
+main{padding:16px 18px 60px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.grid{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin-top:14px;align-items:start}
+@media(max-width:860px){.kpis{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}}
+.card{background:#fff;box-shadow:var(--shadow);border-radius:4px;padding:14px 16px}
+.kpi{border-top:4px solid var(--navy)}.kpi.hot{border-color:var(--red)}
+.kpi b{display:block;font-size:34px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.kpi span{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+h2{margin:0 0 8px;font-size:17px;font-weight:800}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:6px 8px;border-bottom:2px solid var(--navy)}
+td{padding:7px 8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+td.n,th.n{text-align:right}
+tr.top td{background:var(--red-l);font-weight:800}
+.hb{display:grid;grid-template-columns:54px 1fr 40px;gap:10px;align-items:center;font-size:13.5px;font-weight:700;margin-top:6px}
+.hb i{display:block;height:20px;border-radius:0 4px 4px 0;background:var(--navy);min-width:2px;transition:width .4s}
+.hb.best i{background:var(--red)}
+.note{font-size:12.5px;color:var(--ink-3);margin-top:8px;line-height:1.45}
+.warn{background:var(--red-l);border-left:5px solid var(--red);padding:12px 14px;font-size:14px;margin-bottom:14px;display:none}
+.scroll{max-height:520px;overflow:auto}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div><h1>Class results</h1><div id="status">Connecting…</div></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" id="csv">Download CSV</button><button class="btn" id="reset">Clear all results</button></div>
+</div></header>
+<main><div class="wrap">
+  <div class="warn" id="warn"></div>
+  <div class="kpis">
+    <div class="card kpi"><span>Students who submitted</span><b id="k-people">0</b></div>
+    <div class="card kpi hot"><span>Game scores</span><b id="k-game">0</b></div>
+    <div class="card kpi"><span>Mission answers</span><b id="k-mis">0</b></div>
+    <div class="card kpi"><span>Average game score</span><b id="k-avg">–</b></div>
+  </div>
+  <div class="grid">
+    <div class="card"><h2>Lab 2 · Churn Rescue — best score per student</h2><div class="scroll"><table><thead><tr><th>#</th><th>Nickname</th><th>Title earned</th><th class="n">Cutoff</th><th class="n">Net (Rp)</th><th class="n">Score</th></tr></thead><tbody id="game"></tbody></table></div></div>
+    <div>
+      <div class="card"><h2>Lab 1 · BI Detective — missions solved</h2><table><thead><tr><th>Mission</th><th class="n">Solved</th><th class="n">Tried</th></tr></thead><tbody id="mis"></tbody></table><p class="note">Counted per student. “Tried” includes wrong answers.</p></div>
+      <div class="card" style="margin-top:14px"><h2>Cutoff the class chose</h2><div id="hist"></div><p class="note">Red = 0.30, the longest list that still fits 10,000 calls.</p></div>
+    </div>
+  </div>
+</div></main>
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s), fmt=n=>Math.round(n).toLocaleString('en-US');
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const MISSIONS=['Overall churn rate','Contract that loses most','Fiber + monthly churn rate','Segment above 60%'];
+let entries=[];
+function render(){
+  const games=entries.filter(e=>e.kind==='game'), mis=entries.filter(e=>e.kind==='mission');
+  const best={};games.forEach(e=>{if(!best[e.name]||e.score>best[e.name].score)best[e.name]=e;});
+  const list=Object.values(best).sort((a,b)=>b.score-a.score);
+  $('#k-people').textContent=new Set(entries.map(e=>e.name)).size;
+  $('#k-game').textContent=list.length;$('#k-mis').textContent=mis.length;
+  $('#k-avg').textContent=list.length?fmt(list.reduce((a,e)=>a+(e.score||0),0)/list.length):'–';
+  $('#game').innerHTML=list.map((e,i)=>`<tr class="${i<3?'top':''}"><td>${i+1}</td><td>${esc(e.name)}</td><td>${esc(e.title)}</td><td class="n">${typeof e.cutoff==='number'?e.cutoff:''}</td><td class="n">${typeof e.net==='number'?fmt(e.net):''}</td><td class="n">${fmt(e.score||0)}</td></tr>`).join('')||'<tr><td colspan="6">No game scores yet.</td></tr>';
+  $('#mis').innerHTML=MISSIONS.map((t,k)=>{const m=mis.filter(e=>e.mission===k+1);return `<tr><td>${k+1} · ${t}</td><td class="n">${new Set(m.filter(e=>e.correct).map(e=>e.name)).size}</td><td class="n">${new Set(m.map(e=>e.name)).size}</td></tr>`;}).join('');
+  const bins=[.1,.15,.2,.25,.3,.35,.4,.5],cnt=bins.map(()=>0);
+  list.forEach(e=>{if(typeof e.cutoff!=='number')return;let k=0;bins.forEach((b,i)=>{if(Math.abs(b-e.cutoff)<Math.abs(bins[k]-e.cutoff))k=i;});cnt[k]++;});
+  const mx=Math.max(1,...cnt);
+  $('#hist').innerHTML=bins.map((b,i)=>`<div class="hb${b===.3?' best':''}"><span>${b.toFixed(2)}</span><i style="width:${cnt[i]/mx*100}%"></i><span>${cnt[i]}</span></div>`).join('');
+}
+async function load(){
+  try{
+    const d=await (await fetch('api/board',{cache:'no-store'})).json();
+    entries=d.entries||[];
+    const w=$('#warn');
+    if(d.store===false){w.style.display='block';w.innerHTML='<b>The results store is not connected yet.</b> Student pages work, but scores are not being saved. In Vercel: Project → Storage → add <b>Upstash for Redis</b> (free), connect it to this project, then redeploy.';$('#status').textContent='Not saving results';}
+    else{w.style.display='none';$('#status').textContent=entries.length+' results saved · refreshes every 5 seconds';}
+    render();
+  }catch(e){$('#status').textContent='Could not reach the results service. Open this page from the deployed site.';}
+}
+$('#csv').onclick=()=>{
+  const cols=['t','kind','name','score','cutoff','net','title','mission','answer','correct'];
+  const cell=v=>{if(v==null)return '';let s=String(v);if(/^[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';};
+  const rows=[cols.join(',')].concat(entries.map(e=>cols.map(c=>cell(c==='t'&&e.t?new Date(e.t*1000).toISOString():e[c])).join(',')));
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+rows.join('\r\n')],{type:'text/csv'}));a.download='class_results.csv';a.click();URL.revokeObjectURL(a.href);
+};
+$('#reset').onclick=async()=>{
+  const key=prompt('Admin key (the ADMIN_KEY you set in Vercel). This deletes every saved result.');if(!key)return;
+  const r=await fetch('api/reset',{method:'POST',headers:{'X-Admin-Key':key}}).catch(()=>null);
+  alert(r&&r.ok?'All results cleared.':'Not cleared — wrong key, or ADMIN_KEY is not set in Vercel.');load();
+};
+load();setInterval(load,5000);
+})();
+</script>
+</body>
+</html>

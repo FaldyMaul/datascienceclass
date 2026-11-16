@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Churn Rescue — run the retention room</title>
+<style>
+@font-face{font-family:"Jakarta";src:url(assets/fonts/PlusJakartaSans-500.ttf);font-weight:400 500}
+@font-face{font-family:"Jakarta";src:url(assets/fonts/PlusJakartaSans-700.ttf);font-weight:600 700}
+@font-face{font-family:"Jakarta";src:url(assets/fonts/PlusJakartaSans-800.ttf);font-weight:800}
+@font-face{font-family:"Caveat";src:url(assets/fonts/Caveat-400-700.ttf);font-weight:400 700}
+:root{--red:#EB1D0A;--red-l:#FFE3DF;--navy:#141B2A;--paper:#F5F3EE;--line:#DAD6CC;--ink-2:#4A5367;--ink-3:#727A8C;--shadow:0 2px 3px rgba(11,13,18,.1),0 14px 28px -14px rgba(11,13,18,.35)}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font-family:"Jakarta",system-ui,sans-serif;background:var(--navy);color:var(--navy);background-image:radial-gradient(rgba(255,255,255,.07) 1.2px,transparent 1.3px);background-size:24px 24px;-webkit-font-smoothing:antialiased}
+button,input{font:inherit}
+.app{max-width:560px;margin:0 auto;padding:14px 14px 50px;min-height:100vh}
+.top{display:flex;justify-content:space-between;align-items:center;color:#fff;padding:4px 4px 12px}
+.top b{font-size:17px;font-weight:800;letter-spacing:-.01em}.top b span{color:#FF5B4A}
+.score{background:var(--red);color:#fff;font-weight:800;padding:5px 12px;border-radius:99px;font-size:15px;font-variant-numeric:tabular-nums}
+.dots{display:flex;gap:5px;margin-bottom:14px}.dots i{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.18)}.dots i.on{background:var(--red)}
+.sheet{background:var(--paper);border-radius:4px;padding:22px 20px 24px;box-shadow:var(--shadow);position:relative;animation:in .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes in{from{opacity:0;transform:translateY(24px) rotate(-1deg)}}
+.tape{position:absolute;width:110px;height:28px;background:rgba(235,29,10,.85);top:-13px;left:50%;margin-left:-55px;transform:rotate(-3deg);clip-path:polygon(0 12%,5% 0,10% 14%,100% 0,100% 88%,95% 100%,90% 86%,0 100%)}
+.kick{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--red)}
+h1{font-size:44px;line-height:.98;margin:8px 0 10px;letter-spacing:-.04em;font-weight:800}
+h2{font-size:25px;line-height:1.12;margin:6px 0 10px;letter-spacing:-.025em;font-weight:800}
+p{font-size:15.5px;line-height:1.45;color:var(--ink-2);margin:8px 0}
+.hand{font-family:"Caveat";font-size:27px;color:var(--red);font-weight:600;line-height:1.05}
+.btn{display:block;width:100%;background:var(--red);color:#fff;border:0;border-radius:8px;padding:14px 16px;font-weight:800;font-size:17px;cursor:pointer;box-shadow:4px 4px 0 var(--navy);margin-top:14px}
+.btn:disabled{opacity:.45;box-shadow:none}
+.btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--navy)}
+.opt{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--navy);border-radius:8px;padding:12px 14px;font-weight:700;font-size:15.5px;margin-top:9px;cursor:pointer;color:var(--navy)}
+.opt small{display:block;font-weight:500;color:var(--ink-3);font-size:13px;margin-top:2px}
+.opt.good{background:var(--navy);color:#fff;border-color:var(--navy)}.opt.good small{color:#C5CDDD}
+.opt.bad{background:var(--red-l);border-color:var(--red)}
+.opt:disabled{cursor:default}
+.card{background:#fff;border-radius:4px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,.08);margin-top:12px}
+.q{font-size:20px;font-weight:800;line-height:1.25;letter-spacing:-.01em;color:var(--navy);margin:10px 0}
+.fb{border-left:5px solid var(--red);background:#fff;padding:10px 12px;font-size:14.5px;margin-top:12px;line-height:1.4;color:var(--navy)}
+.kp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.kp div{background:#fff;border-top:4px solid var(--navy);padding:8px 10px}
+.kp div.r{border-color:var(--red)}.kp div.r b{color:var(--red)}
+.kp b{display:block;font-size:25px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.kp span{font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.07em}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:10px;border-radius:9px;background:linear-gradient(90deg,var(--red) var(--fill,50%),#D8D4CA var(--fill,50%));outline:0;margin:14px 0 4px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:34px;height:34px;border-radius:50%;background:#fff;border:6px solid var(--red);box-shadow:0 3px 8px rgba(0,0,0,.3)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:6px solid var(--red)}
+.cap{height:22px;background:#E4E0D6;border-radius:4px;position:relative;margin-top:22px}
+.cap i{display:block;height:100%;border-radius:4px;transition:width .25s,background .25s}
+.cap u{position:absolute;left:50%;top:-6px;bottom:-6px;border-left:3px dashed var(--navy)}
+.cap em{position:absolute;left:50%;top:-22px;transform:translateX(-50%);font-size:11px;font-weight:800;font-style:normal;white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+td,th{padding:6px 6px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+td:first-child,th:first-child{text-align:left}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)}
+.segm{background:#fff;border-radius:4px;padding:14px;margin-top:12px;border-left:6px solid var(--navy)}
+.segm h3{margin:0;font-size:17px;font-weight:800}
+.segm .ev{font-size:13.5px;color:var(--ink-2);margin:4px 0 8px;line-height:1.4}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.acts button{border:2px solid var(--navy);background:#fff;border-radius:6px;padding:8px 6px;font-size:13px;font-weight:700;cursor:pointer;color:var(--navy);line-height:1.2}
+.acts button small{display:block;font-weight:500;font-size:11.5px;color:var(--ink-3)}
+.acts button.on{background:var(--navy);color:#fff}.acts button.on small{color:#C5CDDD}
+.budget{position:sticky;bottom:8px;background:var(--navy);color:#fff;border-radius:8px;padding:10px 14px;margin-top:14px;display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:15px;box-shadow:var(--shadow)}
+.budget.over{background:var(--red)}
+.big{font-size:74px;font-weight:800;letter-spacing:-.05em;color:var(--red);line-height:1;font-variant-numeric:tabular-nums}
+.stamp{display:inline-block;border:4px solid var(--red);color:var(--red);font-weight:800;letter-spacing:.1em;text-transform:uppercase;font-size:16px;padding:6px 12px;border-radius:6px;transform:rotate(-5deg);margin-top:8px;animation:thump .5s .3s both}
+@keyframes thump{from{transform:rotate(-5deg) scale(2.2);opacity:0}}
+.name{width:100%;padding:13px 14px;border:2px solid var(--navy);border-radius:8px;font-weight:700;font-size:17px;margin-top:10px}
+.code{font-family:Consolas,monospace;font-size:24px;font-weight:800;letter-spacing:.12em;background:#fff;padding:8px 12px;display:inline-block;border:2px dashed var(--navy)}
+.foot{color:#8E9AB5;font-size:11.5px;text-align:center;margin-top:16px;line-height:1.5}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><b>Churn <span>Rescue</span></b><span class="score" id="score">0 pts</span></div>
+  <div class="dots" id="dots"><i></i><i></i><i></i><i></i></div>
+  <div id="view"></div>
+  <p class="foot">Teaching simulation. Round 3 uses a real evaluation table from a telco churn model; every Rupiah figure and the 10,000-call capacity are illustrative.<br>Round 2 numbers: IBM Telco Customer Churn sample (fictional customers).</p>
+</div>
+<script src="data/threshold.js"></script>
+<script>
+(function(){
+'use strict';
+const T=window.THRESHOLD, view=document.getElementById('view');
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+const rpM=n=>(n<0?'−':'')+'Rp'+(Math.abs(n)/1e6).toLocaleString('en-US',{maximumFractionDigits:1})+'M';
+const S={name:'',pts:[0,0,0,0],cutoff:null,net:0,notes:[]};
+try{S.name=localStorage.getItem('className')||'';}catch(e){}
+const total=()=>S.pts.reduce((a,b)=>a+b,0);
+function chrome(round){document.getElementById('score').textContent=fmt(total())+' pts';document.querySelectorAll('#dots i').forEach((d,i)=>d.classList.toggle('on',i<round));scrollTo(0,0);}
+function sheet(html){view.innerHTML='<div class="sheet"><div class="tape"></div>'+html+'</div>';return view.firstChild;}
+const el=(tag,cls,html)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;};
+
+/* ---------- intro ---------- */
+function intro(){
+  chrome(0);
+  const s=sheet(`<div class="kick">Live lab 2 · Data to decisions</div><h1>You run the retention room.</h1>
+  <p>Customers are about to leave. Your team can make <b>10,000 calls</b> and spend <b>Rp60 million</b>. Four rounds, about eight minutes.</p>
+  <div class="card"><table><tr><th>Round</th><th>Max</th></tr><tr><td>1 · Sort the questions</td><td>500</td></tr><tr><td>2 · Read the table</td><td>450</td></tr><tr><td>3 · Set the cutoff</td><td>600</td></tr><tr><td>4 · Spend the budget</td><td>700</td></tr></table></div>
+  <input class="name" id="nm" maxlength="20" placeholder="Your nickname" aria-label="Nickname" autocomplete="off">
+  <button class="btn" id="go">Start the shift →</button>`);
+  const nm=s.querySelector('#nm');nm.value=S.name;
+  s.querySelector('#go').onclick=()=>{S.name=nm.value.trim()||'Analyst '+Math.floor(100+Math.random()*900);try{localStorage.setItem('className',S.name);}catch(e){}S.pts=[0,0,0,0];S.notes=[];round1(0);};
+}
+
+/* ---------- generic quiz ---------- */
+function quiz(cfg,i,roundIdx,next){
+  chrome(roundIdx+1);
+  const q=cfg.items[i];
+  const s=sheet(`<div class="kick">Round ${roundIdx+1} · ${cfg.title} · ${i+1}/${cfg.items.length}</div>${q.pre||''}<div class="q">${q.q}</div><div id="opts"></div><div id="fb"></div>`);
+  const opts=s.querySelector('#opts');
+  q.opts.forEach((o,oi)=>{const b=el('button','opt',o);b.onclick=()=>{
+    const ok=oi===q.a;if(ok)S.pts[roundIdx]+=cfg.each;
+    opts.querySelectorAll('button').forEach((x,xi)=>{x.disabled=true;if(xi===q.a)x.classList.add('good');else if(xi===oi)x.classList.add('bad');});
+    s.querySelector('#fb').innerHTML=`<div class="fb"><b>${ok?'+'+cfg.each+' · Correct.':'Not this time.'}</b> ${q.why}</div>`;
+    const n=el('button','btn',i+1<cfg.items.length?'Next →':'Finish round →');n.onclick=()=>i+1<cfg.items.length?quiz(cfg,i+1,roundIdx,next):next();s.appendChild(n);chrome(roundIdx+1);n.scrollIntoView({behavior:'smooth',block:'nearest'});
+  };opts.appendChild(b);});
+}
+const TYPES=['Descriptive <small>what happened?</small>','Diagnostic <small>what might explain it?</small>','Predictive <small>what could happen next?</small>','Prescriptive <small>what should we try?</small>'];
+const R1={title:'Sort the questions',each:100,items:[
+ {q:'“How many tickets did each region open last quarter?”',opts:TYPES,a:0,why:'It already happened; a simple table counts it.'},
+ {q:'“Which customers are likely to miss next month’s payment?”',opts:TYPES,a:2,why:'It is about a future period, so you need a model or forecast.'},
+ {q:'“Why did complaints rise in March?”',opts:TYPES,a:1,why:'You compare groups and periods to look for explanations — and a cause still needs evidence.'},
+ {q:'“Which offer should each at-risk customer get, inside a Rp60M budget?”',opts:TYPES,a:3,why:'A choice among actions under a constraint. This is what Solver does.'},
+ {q:'“What is the churn rate of monthly-contract customers?”',opts:TYPES,a:0,why:'A rate from past records. Define numerator and denominator first.'}
+]};
+function round1(i){quiz(R1,i,0,()=>round2(0));}
+
+const PIV=`<div class="card"><p style="font-size:12.5px;margin:0 0 8px;color:#4A5367"><b>Fiber</b> = glass cable, newer. <b>DSL</b> = old copper phone line. <b>Monthly</b> = can leave any time.</p><table><tr><th>Churn rate</th><th>Fiber</th><th>DSL</th><th>No internet</th></tr>
+<tr><td><b>Monthly</b></td><td>54.6%</td><td>32.2%</td><td>18.9%</td></tr><tr><td><b>One year</b></td><td>19.3%</td><td>9.3%</td><td>2.5%</td></tr><tr><td><b>Two year</b></td><td>7.2%</td><td>1.9%</td><td>0.8%</td></tr></table><p style="font-size:12px;margin:6px 0 0">All customers: 26.5%</p></div>`;
+const R2={title:'Read the table',each:150,items:[
+ {pre:PIV,q:'You can investigate one segment first. Which one?',opts:['Monthly · Fiber <small>2,128 customers · 54.6%</small>','Monthly · No internet <small>524 customers · 18.9%</small>','One year · Fiber <small>539 customers · 19.3%</small>','Two year · DSL <small>628 customers · 1.9%</small>'],a:0,why:'Largest group and highest rate: 1,162 customers lost. Size × rate tells you where to look first.'},
+ {q:'Seniors churn at <b>41.7%</b> (1,142 customers). Monthly contracts churn at <b>42.7%</b> (3,875 customers). Which group loses <b>more customers</b>?',opts:['About the same — the rates are almost equal','Monthly contracts — about 1,655 vs 476','Seniors — they are more loyal to phone support'],a:1,why:'Similar rates, very different counts. Always read a rate together with its denominator.'},
+ {q:'Fiber customers churn at 41.9%, DSL at 19.0%. What can you conclude?',opts:['Fiber causes churn — move everyone to DSL','Fiber customers leave more often; the reason needs more evidence','The data must be wrong'],a:1,why:'An observation, not a cause. Price, competition or outages could explain it — that is a diagnostic question.'}
+]};
+function round2(i){quiz(R2,i,1,round3);}
+
+/* ---------- round 3: cutoff ---------- */
+const CAP=10000, BEST=3865;
+function reach(r){const flagged=r[1]+r[3];if(flagged<=CAP)return{flagged,reached:r[1],over:false};return{flagged,reached:Math.round(r[1]/flagged*CAP*.8),over:true};}
+function round3(){
+  chrome(3);
+  const s=sheet(`<div class="kick">Round 3 · Set the cutoff</div><h2>The model scored 227,304 records. Where do you draw the line?</h2>
+  <p>Everyone above the cutoff goes on the call list. Your team can make <b>10,000 calls</b>. If the list is longer, the team calls at random and loses 20% to overload.</p>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:10px"><b>Risk-score cutoff</b><b style="font-size:34px;color:var(--red);font-variant-numeric:tabular-nums" id="cv"></b></div>
+  <input type="range" id="rg" min="0" max="${T.length-1}" value="19" aria-label="Cutoff">
+  <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-3)"><span>← longer list</span><span>shorter list →</span></div>
+  <div class="cap"><i id="cb"></i><u></u><em>capacity 10,000</em></div>
+  <div class="kp"><div><b id="k1"></b><span>on the call list</span></div><div><b id="k2"></b><span>precision</span></div><div class="r"><b id="k3"></b><span>churners on the list</span></div><div class="r"><b id="k4"></b><span>churners you reach</span></div></div>
+  <p id="msg" style="font-weight:600;color:var(--navy)"></p>
+  <button class="btn" id="lock">Lock this cutoff →</button>`);
+  const rg=s.querySelector('#rg');
+  function upd(){const r=T[+rg.value],x=reach(r);rg.style.setProperty('--fill',rg.value/(T.length-1)*100+'%');
+    s.querySelector('#cv').textContent=r[0].toFixed(3).replace(/0$/,'');
+    s.querySelector('#k1').textContent=fmt(x.flagged);s.querySelector('#k2').textContent=(r[1]/x.flagged*100).toFixed(1)+'%';
+    s.querySelector('#k3').textContent=fmt(r[1]);s.querySelector('#k4').textContent=fmt(x.reached);
+    const cb=s.querySelector('#cb');cb.style.width=Math.min(100,x.flagged/CAP*50)+'%';cb.style.background=x.over?'#EB1D0A':'#141B2A';
+    s.querySelector('#msg').textContent=x.over?`Over capacity by ${fmt(x.flagged-CAP)} — the team is overloaded.`:`${fmt(CAP-x.flagged)} calls unused. ${fmt(r[4])} churners are not on your list.`;}
+  rg.oninput=upd;upd();
+  s.querySelector('#lock').onclick=()=>{const r=T[+rg.value],x=reach(r);S.cutoff=r[0];S.reached=x.reached;S.pts[2]=Math.round(Math.min(1,x.reached/BEST)*600);
+    const s2=sheet(`<div class="kick">Round 3 · Result</div><h2>You reached ${fmt(x.reached)} churners.</h2><div class="hand">+${S.pts[2]} points</div>
+    <div class="fb">${x.over?'Your list was longer than the team could call. Recall looked great on paper, but work nobody can do is not a result.':x.flagged<6000?'A short, precise list — but thousands of calls went unused while churners were missed.':'A list the team can actually handle.'} The longest list inside capacity is cutoff <b>0.30</b>: 9,158 records, 3,865 churners.</div>
+    <p>Notice: accuracy never appeared on your screen. You chose with <b>capacity, precision and recall</b>.</p><button class="btn" id="n">Final round →</button>`);
+    chrome(3);s2.querySelector('#n').onclick=round4;};
+}
+
+/* ---------- round 4: budget ---------- */
+const VAL=600000, BUDGET=60e6, SEG_N=1000;
+const ACTS=[{k:'None',cost:0},{k:'Call to explain',cost:10000},{k:'Discount offer',cost:25000},{k:'Technician visit',cost:40000}];
+const SEGS=[
+ {n:'Segment A · recurring service tickets',ev:'Pilot, per 100 customers contacted: a <b>visit</b> kept 9 extra · a <b>call</b> kept 2 · a <b>discount</b> kept 3.',up:[0,2,3,9]},
+ {n:'Segment B · bill jumped last month',ev:'Pilot, per 100: a <b>call</b> kept 6 extra · a <b>discount</b> kept 5 · a <b>visit</b> kept 0.5.',up:[0,6,5,.5]},
+ {n:'Segment C · low usage, long tenure, no complaints',ev:'Pilot, per 100: a <b>discount</b> kept 2 extra · a <b>call</b> kept 1 · a <b>visit</b> kept 0.5. Most stay anyway.',up:[0,1,2,.5]}
+];
+const netOf=(si,ai)=>SEG_N*(SEGS[si].up[ai]/100*VAL-ACTS[ai].cost);
+function round4(){
+  chrome(4);const pick=[0,0,0];
+  const s=sheet(`<div class="kick">Round 4 · Spend the budget</div><h2>Three segments, 1,000 customers each. Which action for which?</h2>
+  <p>A customer who stays is worth <b>Rp600,000</b> in contribution. Budget: <b>Rp60 million</b>. Use the pilot evidence — do the sums in your head (or on a calculator).</p><div id="segs"></div>
+  <div class="budget" id="bud"></div><button class="btn" id="run">Run the campaign →</button>`);
+  const wrap=s.querySelector('#segs');
+  SEGS.forEach((sg,si)=>{const d=el('div','segm',`<h3>${sg.n}</h3><p class="ev">${sg.ev}</p><div class="acts"></div>`);const a=d.querySelector('.acts');
+    ACTS.forEach((ac,ai)=>{const b=el('button',ai===0?'on':'',`${ac.k}<small>${ac.cost?'Rp'+fmt(ac.cost)+' each · '+rpM(ac.cost*SEG_N):'Rp0'}</small>`);b.onclick=()=>{pick[si]=ai;a.querySelectorAll('button').forEach((x,xi)=>x.classList.toggle('on',xi===ai));upd();};a.appendChild(b);});wrap.appendChild(d);});
+  function upd(){const spent=pick.reduce((t,ai)=>t+ACTS[ai].cost*SEG_N,0),over=spent>BUDGET,b=s.querySelector('#bud');b.classList.toggle('over',over);b.innerHTML=`<span>Spent ${rpM(spent)} of Rp60M</span><span>${over?'Over budget':rpM(BUDGET-spent)+' left'}</span>`;s.querySelector('#run').disabled=over;}
+  upd();
+  s.querySelector('#run').onclick=()=>{const nets=pick.map((ai,si)=>netOf(si,ai));S.net=nets.reduce((a,b)=>a+b,0);S.pts[3]=Math.max(0,Math.round(S.net/40e6*700));
+    const rows=SEGS.map((sg,si)=>{const best=sg.up.map((u,ai)=>netOf(si,ai));const bi=best.indexOf(Math.max(...best));return `<tr><td>${sg.n.split(' · ')[0]}<br><span style="color:var(--ink-3)">${ACTS[pick[si]].k}</span></td><td>${rpM(nets[si])}</td><td>${ACTS[bi].k}<br>${rpM(best[bi])}</td></tr>`;}).join('');
+    const s2=sheet(`<div class="kick">Round 4 · Result</div><h2>Net contribution: <span style="color:var(--red)">${rpM(S.net)}</span></h2><div class="hand">+${S.pts[3]} points</div>
+    <div class="card"><table><tr><th>Your choice</th><th>Net</th><th>Best option</th></tr>${rows}</table></div>
+    <div class="fb">Match the action to the symptom. A visit fixes service, a call fixes a confusing bill — and for customers who would stay anyway, <b>doing nothing</b> is the best decision. The formula is the same as Week 14: N × (extra retention × value − cost).</div>
+    <button class="btn" id="n">See my result →</button>`);
+    chrome(4);s2.querySelector('#n').onclick=finish;};
+}
+
+/* ---------- finish ---------- */
+function finish(){
+  chrome(4);const t=total();
+  const title=t>=1950?'Chief Retention Officer':t>=1500?'Senior Analyst':t>=1000?'Analyst':'Trainee';
+  const code=(t*7+13).toString(36).toUpperCase()+'-'+(S.name.length%9);
+  const s=sheet(`<div class="kick">Shift complete · ${S.name.replace(/[<>&]/g,'')}</div><div class="big">${fmt(t)}</div><p style="margin:0">of 2,250 points</p><div class="stamp">${title}</div>
+  <div class="card"><table><tr><th>Round</th><th>Points</th></tr><tr><td>1 · Sort the questions</td><td>${S.pts[0]} / 500</td></tr><tr><td>2 · Read the table</td><td>${S.pts[1]} / 450</td></tr><tr><td>3 · Cutoff ${S.cutoff}</td><td>${S.pts[2]} / 600</td></tr><tr><td>4 · Budget · ${rpM(S.net)}</td><td>${S.pts[3]} / 700</td></tr></table></div>
+  <p id="sent">Result code: <span class="code">${code}</span></p>
+  <p>Look up — your result is on the class board. Be ready to explain <b>what you gave up</b> to get this score.</p>
+  <button class="btn" id="again">Play again</button>`);
+  if(location.protocol.startsWith('http')){fetch('api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'game',name:S.name,score:t,cutoff:S.cutoff,net:S.net,title})}).then(r=>{if(r.ok)s.querySelector('#sent').insertAdjacentHTML('beforeend',' <b style="color:var(--red)">· sent to the board ✓</b>');}).catch(()=>{});}
+  s.querySelector('#again').onclick=intro;
+}
+intro();
+})();
+</script>
+</body>
+</html>
