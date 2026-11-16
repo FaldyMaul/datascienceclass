@@ -18,10 +18,10 @@ body{margin:0;font-family:"Jakarta",system-ui,sans-serif;background:var(--navy);
 h1{font-size:clamp(38px,8vw,72px);line-height:.98;letter-spacing:-.04em;margin:10px 0 0;font-weight:800}
 h1 span{color:#FF5B4A}
 .lead{font-size:18px;color:#C5CDDD;max-width:620px;margin:16px 0 0;line-height:1.45}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:36px}
 @media(max-width:820px){.grid{grid-template-columns:1fr}}
 a.card{display:block;background:#fff;color:var(--navy);text-decoration:none;padding:22px 22px 20px;box-shadow:var(--shadow);border-radius:3px;position:relative;transition:transform .18s}
-a.card:nth-child(1){transform:rotate(-1.2deg)}a.card:nth-child(3){transform:rotate(1.1deg)}
+a.card:nth-child(1){transform:rotate(-1.2deg)}a.card:nth-child(2){transform:rotate(1.1deg)}
 a.card:hover,a.card:focus-visible{transform:translateY(-4px) rotate(0)}
 a.card.red{background:var(--red);color:#fff}
 .hand{font-family:"Caveat";font-size:28px;color:var(--red);line-height:1}
@@ -38,13 +38,12 @@ p{margin:0;font-size:15px;line-height:1.45;color:var(--ink-2)}
 <div class="wrap">
   <div class="kick">Guest lecture · class labs</div>
   <h1>Data to decisions <span>with AI</span></h1>
-  <p class="lead">Three hands-on pages for the class. Open the one your lecturer asks for — they work on a phone.</p>
+  <p class="lead">Two hands-on pages for the class. The dashboard works on a phone; build your own dashboard on a laptop.</p>
   <div class="grid">
     <a class="card" href="02_BI_Dashboard.html"><div class="hand">Lab 1</div><h2>BI Detective</h2><p>Explore 7,043 sample telco customers with filters and charts. Solve four missions.</p><span class="go">Open the dashboard →</span></a>
-    <a class="card red" href="03_Churn_Rescue_Game.html"><div class="hand">Lab 2</div><h2>Churn Rescue</h2><p>Four rounds of decisions: sort the questions, read the table, set the cutoff, spend the budget.</p><span class="go">Play the game →</span></a>
-    <a class="card" href="04_IE_Cafe_Mini_Case.html"><div class="hand">Mini case</div><h2>IE Cafe</h2><p>One dataset, many answers. A worked example: which menu items deserve the spotlight?</p><span class="go">Open the case →</span></a>
+    <a class="card red" href="04_BI_Challenge.html"><div class="hand">Mini case</div><h2>BI Challenge</h2><p>Arunika Fiber: six management questions, one workbook. Build your own dashboard in Google Data Studio.</p><span class="go">Open the case →</span></a>
   </div>
-  <p class="foot">The dashboard uses the public IBM “Telco Customer Churn” sample: fictional customers, not real people. Rupiah figures, call capacity and cafe sales volumes are teaching numbers. Nicknames and scores you submit are shown on the class board.</p>
+  <p class="foot">The dashboard uses the public IBM “Telco Customer Churn” sample: fictional customers, not real people. Arunika Fiber in the BI Challenge is a fictional company with generated data. Nicknames, answers and dashboard links you submit are visible to the class.</p>
 </div>
 </body>
 </html>

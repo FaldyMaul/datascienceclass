@@ -4,10 +4,10 @@ Student-facing pages for a guest lecture on data analytics and AI. Static HTML p
 
 | Page | What it is |
 |---|---|
-| `/` | Landing page with links to the three labs |
+| `/` | Landing page with links to the two student pages |
 | `/02_BI_Dashboard.html` | Lab 1 — BI Detective: filters, charts, four auto-checked missions |
-| `/03_Churn_Rescue_Game.html` | Lab 2 — Churn Rescue: four-round decision game |
-| `/04_IE_Cafe_Mini_Case.html` | Mini case — menu analysis for a small cafe |
+| `/04_BI_Challenge.html` | Mini case — Arunika Fiber: brief, six questions, data dictionary, dashboard submission |
+| `/data/Arunika_Fiber_BI_Case.xlsx` | The case workbook (14 sheets) students load into Google Sheets and Data Studio |
 | `/teacher.html` | Lecturer view: live results, CSV download, clear results (not linked from the landing page) |
 
 ## Deploy on Vercel
@@ -18,7 +18,7 @@ Student-facing pages for a guest lecture on data analytics and AI. Static HTML p
 4. In **Settings → Environment Variables** add `ADMIN_KEY` with a password of your choice. It is needed to clear results.
 5. **Deployments → Redeploy** so the functions pick up the new variables.
 
-Until step 3 is done the labs still work; scores are simply not saved and the game shows a result code instead.
+Until step 3 is done the labs still work; results are simply not saved.
 
 Every push to the main branch redeploys automatically.
 
@@ -26,13 +26,17 @@ Every push to the main branch redeploys automatically.
 
 | Route | Use |
 |---|---|
-| `POST /api/submit` | A lab page sends one result. Fields are whitelisted and capped at 40 characters. |
+| `POST /api/submit` | A page sends one result: a mission answer, or a BI Challenge dashboard (nickname, question, link, one-sentence recommendation). Fields are whitelisted and length-capped; dashboard links must be Data Studio links. |
 | `GET /api/board` | All results. Read by `teacher.html` and by the lecturer's slide deck. |
 | `GET /api/info` | Whether the store is connected, and the number of results. |
 | `POST /api/reset` | Clears results. Needs the header `X-Admin-Key`. |
 
-Results are nicknames and scores only. `GET /api/board` is public by design so the lecturer's deck can read it.
+Results are nicknames, answers, dashboard links and one-sentence recommendations. `GET /api/board` is public by design so the lecturer's deck can read it.
 
 ## Data
 
-The dashboard uses IBM's public "Telco Customer Churn" sample (7,043 fictional customers). Rupiah amounts, call capacity and cafe sales volumes are teaching numbers.
+The dashboard uses IBM's public "Telco Customer Churn" sample (7,043 fictional customers). 
+
+The BI Challenge uses a generated dataset about a fictional home-internet company, Arunika Fiber. No real company or customer data. To rebuild it: `python tools/build_case_data.py` (needs numpy, pandas, xlsxwriter). The seed is fixed, so the output is the same every time.
+
+After uploading the workbook to Google Sheets, paste the share link into `data/case_config.js` so the case page shows an "Open the Google Sheet" button.

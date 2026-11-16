@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BI Challenge — Arunika Fiber</title>
+<meta name="description" content="A telco business case with a ready-to-use dataset. Build your own dashboard in Google Data Studio.">
+<style>
+@font-face{font-family:"Jakarta";src:url(assets/fonts/PlusJakartaSans-500.ttf);font-weight:400 500}
+@font-face{font-family:"Jakarta";src:url(assets/fonts/PlusJakartaSans-800.ttf);font-weight:700 800}
+@font-face{font-family:"Caveat";src:url(assets/fonts/Caveat-400-700.ttf);font-weight:400 700}
+:root{--red:#EB1D0A;--red-l:#FFE3DF;--navy:#141B2A;--paper:#F5F3EE;--line:#DAD6CC;--ink-2:#4A5367;--ink-3:#6B7386;--yellow:#FFF3B8;--shadow:0 1px 2px rgba(11,13,18,.08),0 12px 26px -14px rgba(11,13,18,.32)}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"Jakarta",system-ui,sans-serif;background:var(--paper);color:var(--navy);-webkit-font-smoothing:antialiased;line-height:1.5;font-size:16px}
+a{color:inherit}
+button,input,select,textarea{font:inherit}
+.wrap{max-width:1040px;margin:0 auto;padding:0 18px}
+header{background:var(--navy);color:#fff;padding:34px 0 30px;background-image:radial-gradient(rgba(255,255,255,.07) 1.2px,transparent 1.3px);background-size:26px 26px}
+.kick{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#FF6B5C}
+h1{font-size:clamp(34px,7vw,60px);line-height:1;letter-spacing:-.035em;margin:10px 0 0;font-weight:800}
+h1 span{color:#FF5B4A}
+.lead{font-size:18px;color:#C5CDDD;max-width:700px;margin:14px 0 0}
+nav{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line);overflow-x:auto;white-space:nowrap}
+nav .wrap{display:flex;gap:4px;padding-top:8px;padding-bottom:8px}
+nav a{text-decoration:none;font-weight:800;font-size:13.5px;padding:7px 11px;border-radius:6px;color:var(--ink-2)}
+nav a:hover,nav a:focus-visible{background:var(--red-l);color:var(--red)}
+section{padding:34px 0 6px}
+h2{font-size:clamp(24px,4.4vw,32px);letter-spacing:-.025em;line-height:1.1;margin:0 0 6px;font-weight:800}
+h2 small{display:block;font-family:"Caveat";font-size:26px;color:var(--red);font-weight:700;letter-spacing:0;margin-bottom:2px}
+h3{margin:0 0 4px;font-size:18px;font-weight:800;letter-spacing:-.01em}
+p{margin:0 0 10px}
+.sub{color:var(--ink-2);max-width:760px}
+.card{background:#fff;box-shadow:var(--shadow);border-radius:4px;padding:16px 18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+@media(max-width:860px){.grid3{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.grid2,.grid3{grid-template-columns:1fr}}
+.note{background:var(--yellow);padding:12px 14px;border-radius:3px;box-shadow:var(--shadow);font-size:15px;margin-top:14px;max-width:760px}
+.tl{margin:16px 0 0;padding:0;list-style:none;border-left:3px solid var(--navy)}
+.tl li{position:relative;padding:0 0 14px 18px}
+.tl li::before{content:"";position:absolute;left:-8px;top:5px;width:13px;height:13px;border-radius:50%;background:var(--red);border:3px solid var(--paper)}
+.tl time{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.tl b{display:block}
+.tl span{color:var(--ink-2);font-size:15px}
+.tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:var(--navy);color:#fff;border-radius:3px;padding:2px 7px;margin-left:6px;vertical-align:middle}
+.ch{border-top:5px solid var(--navy);display:flex;flex-direction:column}
+.ch:nth-child(odd){border-color:var(--red)}
+.ch .n{font-family:"Caveat";font-size:26px;color:var(--red);line-height:1}
+.ch .q{font-weight:800;font-size:17px;line-height:1.25;margin:4px 0 8px}
+.ch ul{margin:0 0 10px;padding-left:18px;color:var(--ink-2);font-size:14.5px}
+.ch li{margin-bottom:3px}
+.sheets{margin-top:auto;font-size:12.5px;color:var(--ink-3)}
+.sheets code{background:var(--paper);padding:1px 5px;border-radius:3px;font-size:12px;color:var(--navy);display:inline-block;margin:2px 2px 0 0}
+.steps{counter-reset:s;list-style:none;padding:0;margin:16px 0 0;display:grid;gap:10px}
+.steps li{counter-increment:s;background:#fff;box-shadow:var(--shadow);border-radius:4px;padding:14px 16px 14px 62px;position:relative}
+.steps li::before{content:counter(s);position:absolute;left:14px;top:12px;width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;display:grid;place-items:center}
+.steps li:nth-child(4)::before,.steps li:nth-child(6)::before{background:var(--red)}
+.steps b{font-size:17px}
+.steps p{margin:2px 0 0;color:var(--ink-2);font-size:15px}
+.steps em{font-style:normal;font-weight:800;color:var(--navy)}
+.btn{display:inline-block;background:var(--red);color:#fff;border:0;border-radius:6px;padding:11px 16px;font-weight:800;text-decoration:none;cursor:pointer}
+.btn.dark{background:var(--navy)}
+.btn[disabled]{opacity:.5;cursor:default}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+ol.how{margin:10px 0 0;padding-left:20px;color:var(--ink-2)}
+ol.how li{margin-bottom:5px}
+details{background:#fff;box-shadow:var(--shadow);border-radius:4px;margin-top:8px}
+summary{cursor:pointer;padding:12px 16px;font-weight:800;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+summary code{font-size:15px}
+summary span{font-weight:500;color:var(--ink-3);font-size:13.5px}
+.tw{overflow-x:auto;padding:0 16px 14px}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+th{text-align:left;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:6px 8px;border-bottom:2px solid var(--navy)}
+td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+td code{font-size:13px;white-space:nowrap}
+.tdesc{padding:0 16px 8px;color:var(--ink-2);font-size:14.5px}
+.check{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:8px}
+.check li{background:#fff;border-left:5px solid var(--red);padding:10px 14px;box-shadow:var(--shadow);border-radius:0 4px 4px 0}
+form{display:grid;gap:12px;margin-top:16px;max-width:680px}
+label{font-weight:800;font-size:14px;display:grid;gap:4px}
+input,select,textarea{border:1.5px solid var(--line);border-radius:6px;padding:10px 12px;background:#fff;width:100%;color:var(--navy)}
+input:focus,select:focus,textarea:focus{outline:3px solid var(--red-l);border-color:var(--red)}
+#msg{font-weight:800;min-height:24px}
+footer{padding:30px 0 50px;color:var(--ink-3);font-size:13px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="kick">Mini case · build your own BI</div>
+  <h1>Arunika Fiber: <span>six questions, one dataset</span></h1>
+  <p class="lead">You are the new data analyst at a home-internet company. Management has open questions and a workbook full of data. Pick one question, form a hypothesis, and build a dashboard in Google Data Studio that ends with a recommendation.</p>
+</div></header>
+<nav><div class="wrap"><a href="#story">The company</a><a href="#questions">Questions</a><a href="#method">How to work</a><a href="#data">Get the data</a><a href="#dictionary">Data dictionary</a><a href="#good">A good dashboard</a><a href="#submit">Submit</a></div></nav>
+
+<main class="wrap">
+<section id="story">
+  <h2><small>the company</small>What is Arunika Fiber?</h2>
+  <p class="sub">Arunika Fiber sells home internet over fiber-optic cable in 12 Indonesian cities. Customers pay a monthly fee for a speed package (30 to 300 Mbps). On top of that they can add <b>Arunika TV</b> (10 basic channels plus four paid channel packs), a one-week <b>Speed Booster</b>, a Wi-Fi extender or a static IP address. They manage everything in the <b>MyArunika</b> app, where they also collect loyalty points called <b>Arunika Poin</b>.</p>
+  <p class="sub">The business is healthy but growth is slowing. The network reaches only part of each city, one in six bills is paid late, and the customer survey shows more unhappy customers than happy ones. Management wants decisions backed by data, not opinions.</p>
+  <div class="note"><b>Arunika Fiber is fictional.</b> Every number was generated for this class, so nothing here describes a real company or real people. The patterns are realistic on purpose: there is something to find behind every question.</div>
+  <h3 style="margin-top:22px">What happened in the last 12 months</h3>
+  <ul class="tl" id="timeline"></ul>
+</section>
+
+<section id="questions">
+  <h2><small>choose one</small>Six questions from management</h2>
+  <p class="sub">Each one can be answered with the workbook. The bullets are starting points, not the answer. A strong dashboard often finds something the bullets do not mention.</p>
+  <div class="grid3" id="cards"></div>
+</section>
+
+<section id="method">
+  <h2><small>how to work</small>Six steps: the CRISP-DM path</h2>
+  <p class="sub">The same six steps used in the churn case. The data is already clean, so step 3 is short. Spend your time on steps 1, 4 and 5.</p>
+  <ol class="steps">
+    <li><b>Business understanding</b><p>Write the decision in one sentence: <em>“Management must decide … by choosing between …”</em>. Name the one number that tells you whether the decision worked. Then write your hypothesis: <em>“I think … because …”</em>.</p></li>
+    <li><b>Data understanding</b><p>Read the <a href="#dictionary">data dictionary</a> and the timeline. For each sheet ask: <em>what is one row?</em> A customer, a month, a sale? Note which sheets hold the evidence for your hypothesis.</p></li>
+    <li><b>Data preparation</b><p>Nothing to clean. Connect the sheets you need, check that dates are dates and Rupiah fields are currency, and create the few <em>calculated fields</em> your question needs, such as a late-payment rate or cost per watched hour.</p></li>
+    <li><b>Analysis</b> <span class="tag">modelling</span><p>Test the hypothesis with comparisons: by segment, by city, by month, before and after an event. Look for the group that behaves differently from the rest. If the first hypothesis fails, that is a result too. Write the next one.</p></li>
+    <li><b>Evaluation</b><p>Would a sceptical manager believe it? Check the size of each group, rule out another explanation, and <em>put a number on the opportunity</em>: how many customers, how many Rupiah.</p></li>
+    <li><b>Deployment</b><p>Build one page that someone can read in a minute: a headline that states the finding, three to five charts as evidence, and a recommendation with the next action. Share the link.</p></li>
+  </ol>
+</section>
+
+<section id="data">
+  <h2><small>get the data</small>One workbook, 14 sheets</h2>
+  <p class="sub">About 245,000 rows across customers, areas, sales, payments, app activity, internet usage, TV viewing and customer feedback. November 2025 to October 2026.</p>
+  <div class="btns">
+    <a class="btn" id="sheet" href="#" target="_blank" rel="noopener" hidden>Open the Google Sheet</a>
+    <a class="btn dark" href="data/Arunika_Fiber_BI_Case.xlsx" download>Download the workbook (.xlsx, 9 MB)</a>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>From sheet to dashboard</h3>
+      <ol class="how">
+        <li id="how1">Download the workbook, open <b>sheets.new</b>, then <b>File → Import → Upload</b> and choose “Replace spreadsheet”.</li>
+        <li>Open <b>datastudio.google.com</b> and create a <b>Blank report</b>.</li>
+        <li>Choose the <b>Google Sheets</b> connector, pick the spreadsheet, then one worksheet. Keep “Use first row as headers” ticked. Click <b>Add</b>.</li>
+        <li>Repeat <b>Add data</b> for every sheet you need. Each sheet becomes its own data source.</li>
+        <li>Start with <code>customer_360</code>: one row per customer, already summarised.</li>
+      </ol>
+    </div>
+    <div class="card"><h3>Three things that save time</h3>
+      <ol class="how">
+        <li><b>Rates need a formula.</b> Averaging a percentage column gives the wrong answer when groups differ in size. Create a calculated field, for example <code>SUM(late_or_unpaid_bills) / SUM(bills)</code>.</li>
+        <li><b>Most sheets already carry</b> <code>city</code>, <code>segment</code> and <code>package_name</code>, so you rarely need to blend two sheets.</li>
+        <li><b>For a map</b>, set <code>city</code> to type Geo → City, or use <code>geo_point</code> in the <code>areas</code> sheet as Geo → Latitude, Longitude.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section id="dictionary">
+  <h2><small>data dictionary</small>What every sheet and column means</h2>
+  <p class="sub">A data dictionary is the manual of a dataset. Read it before you chart anything. Tap a sheet to open it.</p>
+  <div id="dict"></div>
+</section>
+
+<section id="good">
+  <h2><small>before you share</small>What a good dashboard looks like</h2>
+  <ul class="check">
+    <li><b>The title is the finding</b>, not the topic. “Eight areas hold most of the unmet demand” beats “Fiber dashboard”.</li>
+    <li><b>Three to five charts</b>, each answering one question. Delete any chart you cannot explain in one sentence.</li>
+    <li><b>Compare, do not just count.</b> Every number sits next to a benchmark: another segment, last month, the company average.</li>
+    <li><b>One or two filters</b> (city, segment or month) so the reader can check their own area.</li>
+    <li><b>It ends with a decision</b>: what to do, for whom, and how big the effect could be in customers or Rupiah.</li>
+    <li><b>It is honest about limits</b>: what the data cannot tell you and what you would test first.</li>
+  </ul>
+</section>
+
+<section id="submit">
+  <h2><small>share it</small>Send your dashboard to the lecturer</h2>
+  <p class="sub">In Data Studio click <b>Share → Manage access → Anyone with the link can view</b>, then copy the link here. Your nickname, link and recommendation are visible to the class.</p>
+  <form id="form">
+    <label>Nickname or team name<input id="f-name" maxlength="40" required autocomplete="off"></label>
+    <label>Which question did you answer?<select id="f-track"></select></label>
+    <label>Link to your dashboard<input id="f-url" type="url" maxlength="200" required placeholder="https://datastudio.google.com/reporting/…"></label>
+    <label>Your recommendation in one sentence<textarea id="f-insight" maxlength="200" rows="3" required placeholder="Management should … because the data shows …"></textarea></label>
+    <div><button class="btn" id="send">Submit</button></div>
+    <div id="msg" role="status"></div>
+  </form>
+</section>
+</main>
+<footer><div class="wrap">Arunika Fiber, MyArunika, Arunika TV and every channel name are invented for teaching. Any resemblance to a real company is not intended. <a href="index.html">Back to the class page</a></div></footer>
+
+<script src="data/case_config.js"></script>
+<script src="data/case_meta.js"></script>
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const META=window.CASE_META||{tables:[],events:[]}, CFG=window.CASE_CONFIG||{};
+const QUESTIONS=[
+ {t:'Fiber build',q:'Where should we build fiber next?',b:['The budget covers only a few areas. Which ones, and why those?','Is a long waiting list the same as strong demand?','Where do we already have network but few customers? Is building the answer there?'],s:['areas','area_monthly','customers','feedback']},
+ {t:'Arunika TV',q:'Which TV channels and packs should we promote, fix or drop?',b:['Which packs do owners really watch? Which are paid for but ignored?','What does each watched hour cost us in licence fees?','Who watches a free channel so much that they would buy the pack?'],s:['tv_viewing','tv_channels','customers','sales']},
+ {t:'Speed upgrade',q:'Which customers need a faster package, and how do we reach them?',b:['Whose line is saturated at the busiest hour? Which segment and package are they on?','What do saturated customers buy, say and score in the survey?','The September upgrade promotion went to everyone. Who actually took it?'],s:['customer_360','internet_usage','sales','feedback']},
+ {t:'Loyalty',q:'How do we make the loyalty programme worth having?',b:['How many points are earned, and how many are ever used?','Do customers who redeem points differ from those who do not?','What do our longest-staying customers get from us today?'],s:['app_usage','customer_360','feedback']},
+ {t:'Late payments',q:'How do we get bills paid on time?',b:['Which payment method, segment and month drive late payment?','How much money arrives late each month?','If you could move customers to one payment method, which, and whom first?'],s:['payments','customers','app_usage','events']},
+ {t:'Customer voice',q:'What is hurting the customer experience most, and where?',b:['Which topics collect the most negative feedback?','Which spikes are one-off events and which are constant problems?','Which problem, if fixed, would move the survey score most?'],s:['feedback','internet_usage','customer_360','events']}
+];
+const fmtD=s=>{const d=new Date(s+'T00:00:00');return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});};
+$('#timeline').innerHTML=META.events.map(e=>`<li><time>${fmtD(e.start)}${e.end!==e.start?' – '+fmtD(e.end):''}</time><b>${esc(e.event)}<span class="tag">${esc(e.type)}</span></b><span>${esc(e.what)}</span></li>`).join('');
+$('#cards').innerHTML=QUESTIONS.map((x,i)=>`<div class="card ch"><div class="n">Question ${i+1} · ${esc(x.t)}</div><div class="q">${esc(x.q)}</div><ul>${x.b.map(b=>`<li>${esc(b)}</li>`).join('')}</ul><div class="sheets">Start with ${x.s.map(s=>`<code>${s}</code>`).join('')}</div></div>`).join('');
+$('#f-track').innerHTML=QUESTIONS.map((x,i)=>`<option value="${i+1} · ${esc(x.t)}">${i+1} · ${esc(x.q)}</option>`).join('')+'<option value="Own question">My own question</option>';
+$('#dict').innerHTML=META.tables.map(t=>`<details><summary><code>${esc(t.name)}</code><span>${t.rows.toLocaleString('en-US')} rows · one row per ${esc(t.grain)}</span></summary><div class="tdesc">${esc(t.desc)}</div><div class="tw"><table><thead><tr><th>Column</th><th>Type</th><th>Meaning</th><th>Example</th></tr></thead><tbody>${t.cols.map(c=>`<tr><td><code>${esc(c.c)}</code></td><td>${esc(c.t)}</td><td>${esc(c.d)}</td><td>${esc(c.e)}</td></tr>`).join('')}</tbody></table></div></details>`).join('');
+if(/^https:\/\/docs\.google\.com\//.test(CFG.sheetUrl||'')){const a=$('#sheet');a.href=CFG.sheetUrl;a.hidden=false;
+  $('#how1').innerHTML='Open the Google Sheet above. You only need to view it. To keep your own copy, use <b>File → Make a copy</b>.';}
+try{$('#f-name').value=localStorage.getItem('className')||'';}catch(e){}
+const OKURL=/^https:\/\/(datastudio|lookerstudio)\.google\.com\/\S+$/;
+$('#form').onsubmit=async ev=>{
+  ev.preventDefault();const msg=$('#msg');
+  const body={kind:'case',name:$('#f-name').value.trim(),track:$('#f-track').value,url:$('#f-url').value.trim(),insight:$('#f-insight').value.trim()};
+  if(!body.name||!body.insight)return;
+  if(!OKURL.test(body.url)){msg.style.color='#B31205';msg.textContent='Paste the share link of your Data Studio report (it starts with https://datastudio.google.com/ or https://lookerstudio.google.com/).';return;}
+  try{localStorage.setItem('className',body.name);}catch(e){}
+  const btn=$('#send');btn.disabled=true;msg.style.color='';msg.textContent='Sending…';
+  try{
+    const r=await fetch('api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(r.ok){msg.style.color='#12693A';msg.textContent='Received. Thank you! You can submit again if you improve it.';}
+    else{msg.style.color='#B31205';msg.textContent=r.status===503?'The results service is not connected. Show the link to your lecturer instead.':'Not sent. Check the link and try again.';}
+  }catch(e){msg.style.color='#B31205';msg.textContent='No connection. Try again in a moment.';}
+  btn.disabled=false;
+};
+})();
+</script>
+</body>
+</html>
